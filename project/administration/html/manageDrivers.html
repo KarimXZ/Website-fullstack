@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Şoförleri Düzenle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #dcdcdc);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Ensure the body takes up at least the height of the viewport */
+            position: relative; /* Set position to relative for proper positioning of the footer */
+            padding-bottom: 100px; /* Prevent footer overlap */
+        }
+        h2, h3 {
+            color: #007BFF;
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 20px auto;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            position: fixed; /* Set position to fixed */
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure footer is above content */
+        }
+        .footer a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 24px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .footer a:hover {
+            transform: scale(1.2);
+        }
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>Şoförleri Düzenle</h2>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>TC Kimlik No</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Maaş</th>
+        </tr>
+        <?php
+            while($row = $query->fetch_assoc()){
+            $objId = $row['id'];
+            echo "<tr><td>" . $row["id"]. "</td><td>" . $row["tckn"]. "</td><td>" . $row["name"]. "</td><td>" . $row["surname"]. "</td><td>" .$row["salary"]. "</td><td><form method='post' action='actions/deleteDriver.php'><input type='hidden' value=$objId name='id'><input type='submit' value='Sil'></form></td><td><a href='editDriver.php?id=$objId'>Düzenle</a></td></tr>";
+        }
+        ?>
+    </table>
+    <h3>Ekle</h3>
+    <form method="post" action="actions/addDrivers.php">
+        <p>Şoför TCKN:</p><input type="number" name="tckn" required> <!--TCKN Doğruluk kontrolü yapılabilir-->
+        <p>Şoför Adı:</p><input type="text" name="name" required>
+        <p>Şoför Soyadı:</p><input type="text" name="surname" required>
+        <p>Şoför Maaşı:</p><input type="number" name="salary" required>
+        <input type="submit">
+    </form>
+    <a href="index.php">Geri dön</a>
+    
+    <div class="footer">
+        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+</body>
+</html>

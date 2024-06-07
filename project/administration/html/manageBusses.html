@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otobüsleri Düzenle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #dcdcdc);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh; /* Ensure the body takes up at least the height of the viewport */
+            position: relative; /* Set position to relative for proper positioning of the footer */
+            padding-bottom: 100px; /* Prevent footer overlap */
+        }
+        h2 {
+            color: #007BFF;
+            text-align: center;
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="submit"],
+        button,
+        a {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover,
+        button:hover,
+        a:hover {
+            background-color: #0056b3;
+        }
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        select {
+            margin-top: 10px;
+            padding: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            position: fixed; /* Set position to fixed */
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure footer is above content */
+        }
+        .footer a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 24px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .footer a:hover {
+            transform: scale(1.2);
+        }
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h2>Otobüs Listesi</h2>
+    <table border="1">
+        <tr>
+            <th>id</th>
+            <th>Otobüs Adı</th>
+            <th>Duraklar</th>
+            <th>Fiyat</th>
+        </tr>
+        <?php
+        while($row = $q->fetch_assoc()){
+            $objId = $row['id'];
+            echo "<tr><td>" . $row["id"]. "</td><td>" . $row["busName"]. "</td><td>" . $row["line"]. "</td><td>" . $row["price"]. "</td><td><form method='post' action='actions/deleteBus.php'><input type='hidden' value=$objId name='id'><input type='submit' value='Sil'></form></td><td><a href='editBus.php?id=$objId'>Düzenle</a></td></tr>";
+        }
+        ?>
+    </table>
+    <center><h3>Ekle</h3></center>
+    <form method="post" action="actions/addBusses.php">
+        <p>Otobüs hat adı:</p><input type="text" name="busName" required>
+        <p>Otobüs hattı durakları</p>
+        <div id="stopSelections">
+            <select name="line[]" required>
+                <?php
+                while($row = $query->fetch_assoc()){
+                    $objId = $row['id'];
+                    $stopName = $row['stopName'];
+                    echo "<option value='$objId'>$stopName</option>";
+                }
+                ?>
+            </select><br><br>
+        </div>
+        <button type="button" onclick="addStop()">Durak Ekle</button>
+        <p>Hat ücreti:</p><input type="number" name="price">
+        <input type="submit" value="Otobüs Ekle">
+    </form>
+    <br>
+    <center><a href="index.php">Geri dön</a>
+        <br><a href='/project/logout.php'>Çıkış Yap</a>
+    </center>
+    <script>
+        function addStop(){
+            var stopSelections = document.getElementById('stopSelections');
+            var stopSelect = document.createElement('select');
+            stopSelect.name = 'line[]';
+            stopSelect.required = true;
+
+            <?php
+                mysqli_data_seek($query, 0);
+                while($row = $query->fetch_assoc()){
+                    $objId = $row['id'];
+                    $stopName = $row['stopName'];
+                    echo "var option = document.createElement('option');";
+                    echo "option.value = '$objId';";
+                    echo "option.textContent = '$stopName';";
+                    echo "stopSelect.appendChild(option);";
+            }
+            ?>
+
+            stopSelections.appendChild(stopSelect);
+
+            // Yeni bir satır ekleyelim
+            var lineBreak1 = document.createElement('br');
+            stopSelections.appendChild(lineBreak1);
+            var lineBreak2 = document.createElement('br');
+            stopSelections.appendChild(lineBreak2);
+        }
+    </script>
+
+    <div class="footer">
+        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+</body>
+</html>

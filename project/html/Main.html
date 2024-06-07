@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transportation Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #3d3d3c, #474141);
+            background: linear-gradient(135deg, #ece9e6, #dcdcdc);
+
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #007BFF;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 18px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin: 0 10px;
+            background-color: #007BFF;
+        }
+        .navbar a:hover, .navbar a.active {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: rgba(36, 36, 36, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        .home {
+            text-align: center;
+        }
+        .home img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+        }
+        .home-text {
+            margin: 20px 0;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .routes, .prices, .about {
+            margin: 20px 0;
+        }
+        .routes h2, .prices h2, .about h2 {
+            font-size: 28px;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure footer is above content */
+        }
+        .footer a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 24px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .footer a:hover {
+            transform: scale(1.2);
+        }
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#home" class="active">Ana Sayfa</a>
+        <a href="#buses">Hatlar</a>
+        <a href="#about">Hakkımızda</a>
+        <?php
+        if(authCheckUser()){
+            echo '<a href="user/index.php" style="text-align: right; margin-left: 57%;">' . $username . '</a><img src="Image/default-avatar.png" style="height: 25px; width: 25px; margin-top: 10px; border-radius: 100%;"><a href="logout.php">Çıkış Yap</a>';
+        }
+        else{
+            echo '<a href="login.html" style="text-align: right; margin-left: 70%;">Giriş Yap</a>';
+        }
+        ?>
+    </div>
+
+    <div class="content" id="home">
+        <div class="home">
+            <div class="home-slider">
+                <img src="https://img.freepik.com/premium-photo/modern-city-buses-bus-station-clear-day_527900-2500.jpg?w=740" alt="Transportation System" style="display: block;">
+                <img src="https://img.freepik.com/premium-photo/tourist-buses-parking-sunrise-sunset_106035-1198.jpg?w=740" alt="Bus Service">
+                <img src="https://img.freepik.com/free-photo/group-buses-driving-along-road-sunset_157027-4307.jpg?w=826&t=st=1716827319~exp=1716827919~hmac=dd6260ec27419e86727177532f5135bee68e9499cd6d5607e106869062d93841" alt="City Transport">
+            </div>
+            <div class="home-text">
+                <p>Şehrimizin ulaşım sistemine hoş geldiniz. Varış noktanıza zamanında ulaşmanızı sağlamak için güvenilir ve verimli otobüs hizmetleri sunuyoruz. Otobüslerimiz yolculuğunuzu konforlu hale getirmek için modern olanaklarla donatılmıştır. Rotalarımızı keşfedin, fiyatları kontrol edin ve hakkımızda daha fazla bilgi edinin.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content" id="buses">
+        <div class="routes">
+            <h2>Otobüs Hatları ve Fiyatları</h2>
+            <table>
+                <th>Otobüs Adı</th>
+                <th>Otobüs Hattı</th>
+                <th>Otobüs Fiyatı</th>
+                <?php
+                    while($row = $busQ->fetch_assoc()){
+                        $stopsArr = json_decode($row['line']);
+                        $stops = fetchStops($conn, $stopsArr);
+                        echo "<tr><td>" . $row['busName'] . "</td><td>" .htmlspecialchars(implode(", ", $stops)) . "</td><td>" . $row['price'] . "</td></tr>";
+                    }
+                ?>
+            </table>
+        </div>
+    </div>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #dcdcdc);
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #007BFF;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 18px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin: 0 10px;
+            background-color: #007BFF;
+        }
+        .navbar a:hover, .navbar a.active {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .home {
+            text-align: center;
+        }
+        .home img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+        }
+        .home-text {
+            margin: 20px 0;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .routes, .prices, .about {
+            margin: 20px 0;
+        }
+        .routes h2, .prices h2, .about h2 {
+            font-size: 28px;
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure footer is above content */
+        }
+        .footer a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 24px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .footer a:hover {
+            transform: scale(1.2);
+        }
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+
+    <div class="content" id="about" style="margin-bottom: 100px;"> <!-- Adjust margin-bottom as needed -->
+        <div class="about">
+            <h2>Hakkımızda</h2>
+            <p>Bize ulaşın:</p>
+            <p>Email: info@transportation.com</p>
+            <p>Telefon: (123) 456-7890</p>
+            <p>Adres: 123 Main Street, Your City, Country</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Simple image slider
+        let currentIndex = 0;
+        const images = document.querySelectorAll('.home-slider img');
+        const showImage = (index) => {
+            images.forEach((img, i) => {
+                img.style.display = i === index ? 'block' : 'none';
+            });
+        };
+        const nextImage = () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(currentIndex);
+        };
+        setInterval(nextImage, 3000); // Change image every 3 seconds
+        showImage(currentIndex);
+
+        // Navbar active tab highlight
+        const navbarLinks = document.querySelectorAll('.navbar a');
+        navbarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navbarLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

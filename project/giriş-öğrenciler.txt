@@ -1,0 +1,20 @@
+Berat Can Yağız - 214210091
+Karim Bayram - 204210762
+
+---------------Kullanıcı Bilgileri----------------
+
+Berat Can: 	kullanıcı adı: sorrence@test.com	parola:sorrence123
+Karim: 		kullanıcı adı: karim@test.com		parola: karim123
+
+---------------Admin Bilgileri----------------
+
+username: sorrence	password: sorrence123
+username: karim		password: karim123
+
+---------------NOT-------------
+Linuxta mysql sunucusundaki root kullanıcısına şifresiz bağlanılmadığı için yeni bir kullanıcı açıp ona tüm izinleri vermem gerekti. 
+
+Kullanıcının bilgileri:
+	
+	username: dbadmin
+	password: cokgizlisifre123

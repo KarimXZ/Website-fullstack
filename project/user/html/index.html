@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kullanıcı ekranı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ece9e6, #dcdcdc);
+            margin: 0;
+            padding: 0;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+        h3 {
+            color: #007BFF;
+            margin-top: 30px;
+            margin-left: 200px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+            border-radius: 50px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="submit"],
+        a {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        input[type="submit"]:hover,
+        a:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            position:relative; /* Change position to relative */
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1; /* Ensure footer is above content */
+            margin-top: 20px; /* Add margin to prevent overlap */ 
+            
+        }
+        .footer a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 24px;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .footer a:hover {
+            transform: scale(1.2);
+        }
+        .footer p {
+            margin: 10px 0 0;
+            font-size: 14px;
+            color: #555;
+        }
+        /* Update icon color */
+        .fab {
+            color: #ffff;
+        }
+        
+        .navbar {
+            background-color: #007BFF;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 18px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin: 0 10px;
+            background-color: #007BFF;
+        }
+        .navbar a:hover, .navbar a.active {
+            background-color: #0056b3;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="../#home">Ana Sayfa</a>
+        <a href="../#buses">Hatlar</a>
+        <?php
+        if(authCheckUser()){
+            echo '<a href="index.php" style="text-align: right; margin-left: 63%;" class="active">' . $username . '</a><a href="../logout.php">Çıkış Yap</a>';
+        }
+        else{
+            echo '<a href="login.html" style="text-align: right; margin-left: 70%;">Giriş Yap</a>';
+        }
+        ?>
+    </div>    
+    <h3>Hesap Hareketleri</h3>
+    <table>
+        <tr>
+            <th>Tarih</th>
+            <th>Banka Kartı</th>
+            <th>Otobüs Kartı</th>
+            <th>Otobüs Adı</th>
+            <th>Miktar</th>
+        </tr>
+        <?php
+            while($row = $queryTransactions->fetch_assoc()){
+                
+                $bankCardId = $row['bankCardId'];
+                $busCardId = $row['busCardId'];
+                $busId = $row['busId'];
+
+                $cardNumberQ = mysqli_query($conn, "SELECT cardNumber FROM bankCards WHERE id = '$bankCardId'");
+                $cardNumberRow = mysqli_fetch_assoc($cardNumberQ);
+                $cardNumber = $cardNumberRow['cardNumber'];
+
+                $cardSerialNumberQ = mysqli_query($conn, "SELECT cardSerialNumber FROM busCards WHERE id = '$busCardId'");
+                $cardSerialNumberRow = mysqli_fetch_assoc($cardSerialNumberQ);
+                $cardSerialNumber = $cardSerialNumberRow['cardSerialNumber'];
+
+                $busNameQ = mysqli_query($conn, "SELECT busName FROM busses WHERE id='$busId'");
+                $busRow = mysqli_fetch_assoc($busNameQ);
+                $busName = $busRow['busName'];
+        
+                echo "<tr><td>" . $row['time']. "</td><td>". substr_replace($cardNumber, '**** ****', 5, 10) ."</td><td>". $cardSerialNumber ."</td><td>". $busName ."</td><td>". $row['transactionValue'] ."</td></tr>";
+            }
+        ?>
+    </table>
+    
+    <h3>Kayıtlı Banka Kartları</h3>
+    <table>
+        <tr>
+            <th>Kart Numarası</th>
+        </tr>
+        <?php
+            while($row = $queryCard->fetch_assoc()){
+                $objId = $row['id'];
+                echo "<tr><td>" . substr_replace($row["cardNumber"], '**** ****', 5, 10). "</td><td style='border: 0; width: 50px;  '><form method='post' action='../php/deleteBankCard.php'><input type='hidden' value=$objId name='id'><input type='submit' value='Sil'></form></td><td style='border: 0;'><a href='editBankCard.php?id=$objId'>Düzenle</td></tr>";
+            }
+        ?>
+    </table>
+    <br>
+    <a href="addBankCard.php" style="margin-left: 200px;">Banka kartı ekle</a><br>
+    <br>
+    <h3>Kayıtlı Otobüs Kartları</h3>
+    <table>
+        <tr>
+            <th>Kart Seri Numarası</th>
+            <th>İçindeki Para Miktarı</th>
+        </tr>
+        <?php
+            while($row = $queryBusCard->fetch_assoc()){
+                $objId = $row['id'];
+                echo "<tr><td>" . $row["cardSerialNumber"]. "</td><td>". $row["money"]."</td><td style='border: 0;'><form method='post' action='../php/deleteBusCard.php'><input type='hidden' value=$objId name='id'><input type='submit' value='Sil'></form></td></tr>";
+            }
+        ?>
+    </table>
+    <br>
+    <a href="loadMoney.php" style="margin-left: 200px;">Para Yükle</a>
+    <a href="addBusCard.php" style="margin-left: 20px;">Otobüs kartı ekle</a><br>
+    <br><br><a href='../logout.php' style="margin-left: 200px; background-color: #dd1d1d;">Çıkış yap</a>
+    <div class="footer">
+        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </div>
+</body>
+</html>
